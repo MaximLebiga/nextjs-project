@@ -78,7 +78,7 @@ export default function Comment({ comment, commentId, postId }) {
         await signIn()
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

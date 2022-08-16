@@ -45,7 +45,7 @@ export default function Input() {
         })
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
 
     setText('')

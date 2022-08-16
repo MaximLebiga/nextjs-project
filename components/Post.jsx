@@ -50,7 +50,7 @@ export default function Post({ post, id }) {
           })
         }
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     } else {
       signIn()
@@ -65,7 +65,7 @@ export default function Post({ post, id }) {
       try {
         await signIn()
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
   }
@@ -80,7 +80,7 @@ export default function Post({ post, id }) {
         router.push('/')
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
   return (
@@ -103,7 +103,7 @@ export default function Post({ post, id }) {
                   {post.name}
                 </h4>
                 <span className="text-sm sm:text-[15px]">
-                  @{post.username} &ndash;&thinsp;
+                  @{post.username}&nbsp;&ndash;&nbsp;
                 </span>
                 {post.timestamp && (
                   <span className="text-sm sm:text-[15px] hover:underline">

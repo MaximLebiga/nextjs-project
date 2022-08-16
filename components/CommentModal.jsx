@@ -35,7 +35,7 @@ export default function CommentModal() {
         userId: session.user.uid
       })
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
 
     setIsOpen(false)
@@ -81,7 +81,7 @@ export default function CommentModal() {
                   {post.data().name}
                 </h4>
                 <span className="text-sm sm:text-[15px]">
-                  @{post.data().username} &ndash;&thinsp;
+                  @{post.data().username}&nbsp;&ndash;&nbsp;
                 </span>
                 <span className="text-sm sm:text-[15px] hover:underline">
                   <Moment fromNow>{post.data().timestamp.toDate()}</Moment>
