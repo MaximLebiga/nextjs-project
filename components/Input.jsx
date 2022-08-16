@@ -24,24 +24,28 @@ export default function Input() {
 
     setLoading(true)
 
-    const docRef = await addDoc(collection(db, 'posts'), {
-      id: session.user.uid,
-      text,
-      userImg: session.user.image,
-      timestamp: serverTimestamp(),
-      name: session.user.name,
-      username: session.user.name
-    })
-
-    const imageRef = ref(storage, `posts/${docRef.id}/image`)
-
-    if (file) {
-      await uploadString(imageRef, file, "data_url").then(async () => {
-        const downloadUrl = await getDownloadURL(imageRef)
-        await updateDoc(doc(db, 'posts', docRef.id), {
-          image: downloadUrl
-        })
+    try {
+      const docRef = await addDoc(collection(db, 'posts'), {
+        id: session.user.uid,
+        text,
+        userImg: session.user.image,
+        timestamp: serverTimestamp(),
+        name: session.user.name,
+        username: session.user.name
       })
+
+      const imageRef = ref(storage, `posts/${docRef.id}/image`)
+
+      if (file) {
+        await uploadString(imageRef, file, 'data_url').then(async () => {
+          const downloadUrl = await getDownloadURL(imageRef)
+          await updateDoc(doc(db, 'posts', docRef.id), {
+            image: downloadUrl
+          })
+        })
+      }
+    } catch (error) {
+      console.log(error)
     }
 
     setText('')
@@ -123,6 +127,6 @@ export default function Input() {
           </div>
         </div>
       </div>
-    ) : <></>
+    ) : null
   )
 }

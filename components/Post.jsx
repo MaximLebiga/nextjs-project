@@ -42,11 +42,19 @@ export default function Post({ post, id }) {
   const handleLikeButtonClick = async () => {
     if (session) {
       if (isLiked) {
-        await deleteDoc(doc(db, 'posts', id, 'likes', session.user.uid))
+        try {
+          await deleteDoc(doc(db, 'posts', id, 'likes', session.user.uid))
+        } catch (error) {
+          console.log(error)
+        }
       } else {
-        await setDoc(doc(db, 'posts', id, 'likes', session.user.uid), {
-          username: session.user.username
-        })
+        try {
+          await setDoc(doc(db, 'posts', id, 'likes', session.user.uid), {
+            username: session.user.username
+          })
+        } catch (error) {
+          console.log(error)
+        }
       }
     } else {
       signIn()
@@ -62,11 +70,19 @@ export default function Post({ post, id }) {
     }
   }
 
-  const handleDeleteButtonClick = () => {
+  const handleDeleteButtonClick = async () => {
     if (window.confirm('Are you sure you want delete this post?')) {
-      deleteDoc(doc(db, 'posts', id))
+      try {
+        await deleteDoc(doc(db, 'posts', id))
+      } catch (error) {
+        console.log(error)
+      }
       if (post.image) {
-        deleteObject(ref(storage, `posts/${id}/image`))
+        try {
+          await deleteObject(ref(storage, `posts/${id}/image`))
+        } catch (error) {
+          console.log(error)
+        }
       }
       router.push('/')
     }
@@ -81,37 +97,35 @@ export default function Post({ post, id }) {
             src={post.userImg}
             alt="profile image"
             className="rounded-full"
-            onClick={() => router.push(`/posts/${id}`)}
           />
         </div>
         <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1 whitespace-nowrap">
-              <h4 className="font-bold text-[15px] sm:text-[16px] hover:underline">
-                {post.name}
-              </h4>
-              <span className="text-sm sm:text-[15px]">
-                @{post.username} -{' '}
-              </span>
-              {post.timestamp && (
-                <span className="text-sm sm:text-[15px] hover:underline">
-                  <Moment fromNow>{post.timestamp.toDate()}</Moment>
+          <div onClick={() => router.push(`/posts/${id}`)}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1 whitespace-nowrap">
+                <h4 className="font-bold text-[15px] sm:text-[16px] hover:underline">
+                  {post.name}
+                </h4>
+                <span className="text-sm sm:text-[15px]">
+                  @{post.username} &ndash;&thinsp;
                 </span>
-              )}
+                {post.timestamp && (
+                  <span className="text-sm sm:text-[15px] hover:underline">
+                    <Moment fromNow>{post.timestamp.toDate()}</Moment>
+                  </span>
+                )}
+              </div>
+              <DotsHorizontalIcon className="h-10 hoverEffect w-10 hover:bg-sky-100 hover:text-sky-500 p-2" />
             </div>
-            <DotsHorizontalIcon className="h-10 hoverEffect w-10 hover:bg-sky-100 hover:text-sky-500 p-2" />
+            <p className="text-gray-800 text-[15px] sm:text-[16px] mb-2">
+              {post.text}
+            </p>
+            <img
+              src={post.image}
+              alt="post image"
+              className="rounded-2xl mr-2"
+            />
           </div>
-          <p
-            onClick={() => router.push(`/posts/${id}`)}
-            className="text-gray-800 text-[15px] sm:text-[16px] mb-2"
-          >
-            {post.text}
-          </p>
-          <img
-            src={post.image}
-            alt="post image"
-            className="rounded-2xl mr-2"
-          />
           <div className="flex justify-between text-gray-500 p-2">
             <div className="flex items-center">
               <ChatIcon

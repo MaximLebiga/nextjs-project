@@ -25,14 +25,18 @@ export default function CommentModal() {
   }, [postId])
 
   const handleCommentButtonClick = async () => {
-    await addDoc(collection(db, 'posts', postId, 'comments'), {
-      comment: text,
-      name: session.user.name,
-      username: session.user.username,
-      userImg: session.user.image,
-      timestamp: serverTimestamp(),
-      userId: session.user.uid
-    })
+    try {
+      await addDoc(collection(db, 'posts', postId, 'comments'), {
+        comment: text,
+        name: session.user.name,
+        username: session.user.username,
+        userImg: session.user.image,
+        timestamp: serverTimestamp(),
+        userId: session.user.uid
+      })
+    } catch (error) {
+      console.log(error)
+    }
 
     setIsOpen(false)
     setText('')
@@ -47,6 +51,7 @@ export default function CommentModal() {
     <div>
       {isOpen && (
         <Modal
+          ariaHideApp={false}
           isOpen={isOpen}
           onRequestClose={() => setIsOpen(false)}
           className="max-w-lg w-[90%] absolute top-24 left-1/2 translate-x-[-50%] bg-white border-2 border-gray-400 rounded-xl shadow-md"
@@ -76,13 +81,15 @@ export default function CommentModal() {
                   {post.data().name}
                 </h4>
                 <span className="text-sm sm:text-[15px]">
-                  @{post.data().username} -{' '}
+                  @{post.data().username} &ndash;&thinsp;
                 </span>
                 <span className="text-sm sm:text-[15px] hover:underline">
                   <Moment fromNow>{post.data().timestamp.toDate()}</Moment>
-                </span> 
+                </span>
               </div>
-              <p className="text-gray-500 text-[15px] sm:text-4 ml-16 mb-2">{post.data().text}</p>
+              <p className="text-gray-500 text-[15px] sm:text-4 ml-16 mb-2">
+                {post.data().text}
+              </p>
               <div className="flex items-start p-3 space-x-3">
                 <div>
                   <Image

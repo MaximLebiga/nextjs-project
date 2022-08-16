@@ -21,7 +21,6 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRecoilState } from 'recoil'
 import { modalState } from '../atom/modalAtom'
-import { useRouter } from 'next/router'
 
 export default function Comment({ comment, commentId, postId }) {
   const { data: session } = useSession()
@@ -46,23 +45,37 @@ export default function Comment({ comment, commentId, postId }) {
 
   const handleLikeButtonClick = async () => {
     if (session) {
-      if (isLiked) {
-        await deleteDoc(doc(db, 'posts', postId, 'comments', commentId, 'likes', session.user.uid))
-      } else {
-        await setDoc(
-          doc(
-            db,
-            'posts',
-            postId,
-            'comments',
-            commentId,
-            'likes',
-            session.user.uid
-          ),
-          {
-            username: session.user.username
-          }
-        )
+      try {
+        if (isLiked) {
+          await deleteDoc(
+            doc(
+              db,
+              'posts',
+              postId,
+              'comments',
+              commentId,
+              'likes',
+              session.user.uid
+            )
+          )
+        } else {
+          await setDoc(
+            doc(
+              db,
+              'posts',
+              postId,
+              'comments',
+              commentId,
+              'likes',
+              session.user.uid
+            ),
+            {
+              username: session.user.username
+            }
+          )
+        }
+      } catch (error) {
+        console.log(error)
       }
     } else {
       signIn()
@@ -71,16 +84,15 @@ export default function Comment({ comment, commentId, postId }) {
 
   const handleChatButtonClick = () => {
     if (session) {
-      setPostId(postId)
       setIsOpen((prevState) => !prevState)
     } else {
       signIn()
     }
   }
 
-  const handleDeleteButtonClick = () => {
+  const handleDeleteButtonClick = async () => {
     if (window.confirm('Are you sure you want delete this comment?')) {
-      deleteDoc(doc(db, 'posts', postId, 'comments', commentId))
+      await deleteDoc(doc(db, 'posts', postId, 'comments', commentId))
     }
   }
   return (
