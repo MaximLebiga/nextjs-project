@@ -44,8 +44,8 @@ export default function Comment({ comment, commentId, postId }) {
   }, [commentId, postId])
 
   const handleLikeButtonClick = async () => {
-    if (session) {
-      try {
+    try {
+      if (session) {
         if (isLiked) {
           await deleteDoc(
             doc(
@@ -74,11 +74,11 @@ export default function Comment({ comment, commentId, postId }) {
             }
           )
         }
-      } catch (error) {
-        console.log(error)
+      } else {
+        await signIn()
       }
-    } else {
-      signIn()
+    } catch (error) {
+      console.log(error)
     }
   }
 

@@ -41,50 +41,46 @@ export default function Post({ post, id }) {
 
   const handleLikeButtonClick = async () => {
     if (session) {
-      if (isLiked) {
-        try {
+      try {
+        if (isLiked) {
           await deleteDoc(doc(db, 'posts', id, 'likes', session.user.uid))
-        } catch (error) {
-          console.log(error)
-        }
-      } else {
-        try {
+        } else {
           await setDoc(doc(db, 'posts', id, 'likes', session.user.uid), {
             username: session.user.username
           })
-        } catch (error) {
-          console.log(error)
         }
+      } catch (error) {
+        console.log(error)
       }
     } else {
       signIn()
     }
   }
 
-  const handleChatButtonClick = () => {
+  const handleChatButtonClick = async () => {
     if (session) {
       setPostId(id)
       setIsOpen((prevState) => !prevState)
     } else {
-      signIn()
+      try {
+        await signIn()
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
   const handleDeleteButtonClick = async () => {
-    if (window.confirm('Are you sure you want delete this post?')) {
-      try {
+    try {
+      if (window.confirm('Are you sure you want delete this post?')) {
         await deleteDoc(doc(db, 'posts', id))
-      } catch (error) {
-        console.log(error)
-      }
-      if (post.image) {
-        try {
+        if (post.image) {
           await deleteObject(ref(storage, `posts/${id}/image`))
-        } catch (error) {
-          console.log(error)
         }
+        router.push('/')
       }
-      router.push('/')
+    } catch (error) {
+      console.log(error)
     }
   }
   return (
